@@ -1,0 +1,67 @@
+{
+  "name": "postcss-px-to-viewport-8-plugin-generic",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "description": "A generic PostCSS plugin that converts px units to viewport units (vw, vh, vmin, vmax)",
+  "authors": {
+    "name": "ThisIsHermanCheng"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThisIsHermanCheng/postcss-px-to-viewport-generic"
+  },
+  "scripts": {
+    "build": "father build",
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+    "test": "jest spec/*.spec.js"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.3",
+    "@types/node": "^13.7.7",
+    "@types/object-assign": "^4.0.30",
+    "father": "^4.1.3",
+    "father-build": "^1.17.2",
+    "jest": "^25.4.0",
+    "lint-staged": "^10.0.8",
+    "postcss": "^8.3.8",
+    "prettier": "^1.19.1",
+    "ts-jest": "^29.0.5",
+    "yorkie": "^2.0.0"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+   "files": [
+    "lib",
+    "es",
+    "README.md"
+  ],
+  "dependencies": {
+    "object-assign": "^4.1.1"
+  },
+  "directories": {
+    "example": "example"
+  },
+  "keywords": [
+    "postcss-px-to-viewport-8-plugin-generic",
+    "viewport",
+    "postcss",
+    "postcss-plugin",
+    "css",
+    "px",
+    "vw",
+    "vh",
+    "vmin",
+    "vmax"
+  ],
+  "author": "ThisIsHermanCheng",
+  "license": "MIT"
+}
