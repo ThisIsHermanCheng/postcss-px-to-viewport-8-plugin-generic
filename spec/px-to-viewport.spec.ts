@@ -745,3 +745,116 @@ describe('/* px-to-viewport-ignore */ & /* px-to-viewport-ignore-next */', funct
     expect(processed).toBe(expected);
   });
 });
+
+describe('except', function() {
+  var rules =
+    '.rule { border: 1px solid #000; font-size: 16px; margin: 1px 10px; }';
+  var covered =
+    '.rule { border: 1px solid #000; font-size: 5vw; margin: 1px 3.125vw; }';
+
+  it('should work with regex exclude and regex except - file matches except', function() {
+    var options = {
+      exclude: /\/node_modules\//,
+      except: /\/node_modules\/important-lib\//
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/important-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(covered);
+  });
+
+  it('should work with regex exclude and regex except - file does not match except', function() {
+    var options = {
+      exclude: /\/node_modules\//,
+      except: /\/node_modules\/important-lib\//
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/other-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(rules);
+  });
+
+  it('should work with array exclude and array except - file matches except', function() {
+    var options = {
+      exclude: [/\/node_modules\//, /\/dist\//],
+      except: [/\/node_modules\/important-lib\//, /\/node_modules\/critical-lib\//]
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/critical-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(covered);
+  });
+
+  it('should work with array exclude and array except - file does not match except', function() {
+    var options = {
+      exclude: [/\/node_modules\//, /\/dist\//],
+      except: [/\/node_modules\/important-lib\//, /\/node_modules\/critical-lib\//]
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/other-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(rules);
+  });
+
+  it('should work with regex exclude and array except - file matches one except pattern', function() {
+    var options = {
+      exclude: /\/node_modules\//,
+      except: [/\/node_modules\/important-lib\//, /\/node_modules\/critical-lib\//]
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/important-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(covered);
+  });
+
+  it('should work with array exclude and regex except - file matches except', function() {
+    var options = {
+      exclude: [/\/node_modules\//, /\/dist\//],
+      except: /\/node_modules\/important-lib\//
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/important-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(covered);
+  });
+
+  it('should work when file does not match exclude - except should be ignored', function() {
+    var options = {
+      exclude: /\/node_modules\//,
+      except: /\/node_modules\/important-lib\//
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/src/main.css',
+    }).css;
+
+    expect(processed).toBe(covered);
+  });
+
+  it('should work when only except is provided without exclude', function() {
+    var options = {
+      except: /\/node_modules\/important-lib\//
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/other-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(covered);
+  });
+
+  it('should work when exclude is provided without except', function() {
+    var options = {
+      exclude: /\/node_modules\//
+    };
+    var processed = postcss(pxToViewport(options)).process(rules, {
+      from: '/project/node_modules/any-lib/main.css',
+    }).css;
+
+    expect(processed).toBe(rules);
+  });
+});
