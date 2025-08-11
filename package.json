@@ -1,6 +1,6 @@
 {
   "name": "postcss-px-to-viewport-8-plugin-generic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -39,7 +39,7 @@
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
-   "files": [
+  "files": [
     "lib",
     "es",
     "README.md"
