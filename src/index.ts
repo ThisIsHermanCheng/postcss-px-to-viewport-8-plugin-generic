@@ -6,7 +6,7 @@ import {
   createPxReplace,
   declarationExists,
   getUnit,
-  isExclude,
+  shouldExcludeFile,
   validateParams,
 } from './utils';
 import objectAssign from 'object-assign';
@@ -14,7 +14,7 @@ import objectAssign from 'object-assign';
 import { AtRule, Root, Rule } from 'postcss';
 import postcss from 'postcss';
 
-const defaults: Required<Omit<OptionType, 'exclude' | 'include' | 'minViewportWidth'>> = {
+const defaults: Required<Omit<OptionType, 'exclude' | 'except' | 'include' | 'minViewportWidth'>> = {
   unitToConvert: 'px',
   viewportWidth: 320,
   viewportHeight: 568, // not now used; TODO: need for different units and math for different properties
@@ -52,21 +52,10 @@ const postcssPxToViewport = (options: OptionType) => {
     Once(css: Root, { result }: { result: any }) {
       // @ts-ignore Add type definitions
       css.walkRules((rule: RuleType) => {
-        // Add exclude option to ignore some files like 'node_modules'
+        // Add exclude option with except override to ignore some files like 'node_modules'
         const file = rule.source?.input.file || '';
-        if (opts.exclude && file) {
-          if (Object.prototype.toString.call(opts.exclude) === '[object RegExp]') {
-            if (isExclude(opts.exclude as RegExp, file)) return;
-          } else if (
-            // Object.prototype.toString.call(opts.exclude) === '[object Array]' &&
-            opts.exclude instanceof Array
-          ) {
-            for (let i = 0; i < opts.exclude.length; i++) {
-              if (isExclude(opts.exclude[i], file)) return;
-            }
-          } else {
-            throw new Error('options.exclude should be RegExp or Array.');
-          }
+        if (file && shouldExcludeFile(opts.exclude, opts.except, file)) {
+          return;
         }
 
         if (blacklistedSelector(opts.selectorBlackList, rule.selector)) return;

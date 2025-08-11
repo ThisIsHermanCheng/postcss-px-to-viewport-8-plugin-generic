@@ -63,6 +63,13 @@ export type OptionType = {
    */
   exclude?: RegExp | RegExp[];
   /**
+   * Exception patterns for exclude. Files matching these patterns will be processed even if they match exclude patterns
+   * Works in conjunction with exclude option to provide more granular control
+   * If the value is a regular expression, files matching this regex will be processed despite matching exclude
+   * If an array is passed, the array values must be regular expressions
+   */
+  except?: RegExp | RegExp[];
+  /**
    * If include is set, only matching files will be converted
    * If the value is a regular expression, matching files will be included, otherwise the file will be excluded
    * If an array is passed, the array values must be regular expressions

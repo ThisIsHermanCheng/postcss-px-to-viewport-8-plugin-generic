@@ -113,6 +113,7 @@ yarn add postcss-px-to-viewport-8-plugin-generic -D
   mediaQuery: false,
   replace: true,
   exclude: [],
+  except: [],
   landscape: false,
   landscapeUnit: 'vw',
   landscapeWidth: 568,
@@ -138,6 +139,7 @@ yarn add postcss-px-to-viewport-8-plugin-generic -D
 | `landscapeUnit` | Unit used in landscape mode | `string` | vw |
 | `landscapeWidth` | Viewport width used in landscape mode. If a function is passed, the function parameter is the file path being processed. Function returns `undefined` to skip conversion | `number` | 568 |
 | `exclude` | Ignore files in certain folders or specific files, such as files under node_modules. If the value is a regular expression, files matching this regex will be ignored. If an array is passed, the array values must be regular expressions | `Regexp` | undefined |
+| `except` | Exception patterns for exclude. Files matching these patterns will be processed even if they match exclude patterns. Works in conjunction with exclude option to provide more granular control. If the value is a regular expression, files matching this regex will be processed despite matching exclude. If an array is passed, the array values must be regular expressions | `Regexp` | undefined |
 | `include` | Files to convert, such as only converting files under 'src/mobile' (`include: /\/src\/mobile\//`). If the value is a regular expression, matching files will be included, otherwise the file will be excluded. If an array is passed, the array values must be regular expressions | `Regexp` | undefined |
 | `minViewportWidth` | Minimum viewport width threshold. Only convert to viewport units when viewport width is greater than this value. When this option is set, media queries will be generated. Original px values are used for widths smaller than this, viewport units for widths larger than this | `number` | undefined |
 
@@ -182,7 +184,48 @@ Example:
 }
 ```
 
-There are several more reasons why your pixels may not convert, the following options may affect this: `propList`, `selectorBlackList`, `minPixelValue`, `mediaQuery`, `exclude`, `include`.
+There are several more reasons why your pixels may not convert, the following options may affect this: `propList`, `selectorBlackList`, `minPixelValue`, `mediaQuery`, `exclude`, `except`, `include`.
+
+## Except API
+
+The `except` option works in conjunction with the `exclude` option to provide more granular control over file processing. When both options are used together:
+
+1. Files matching `exclude` patterns are normally excluded from processing
+2. Files matching `except` patterns are processed even if they match `exclude` patterns
+3. This allows you to exclude broad categories of files while making exceptions for specific files or folders
+
+### Examples
+
+**Exclude all node_modules except specific libraries:**
+```js
+{
+  exclude: /\/node_modules\//,
+  except: [/\/node_modules\/important-lib\//, /\/node_modules\/critical-lib\//]
+}
+```
+
+**Exclude dist folder except specific subdirectories:**
+```js
+{
+  exclude: /\/dist\//,
+  except: /\/dist\/components\//
+}
+```
+
+**Exclude test files except integration tests:**
+```js
+{
+  exclude: [/\.test\./, /\.spec\./],
+  except: /integration\.test\./
+}
+```
+
+### Use Cases
+
+- **Library Management**: Exclude all third-party libraries except those you want to customize
+- **Build Optimization**: Exclude generated files except specific components that need processing
+- **Development Workflow**: Exclude test files except specific test suites that need viewport conversion
+- **Multi-environment Setup**: Exclude environment-specific files except the current target environment
 
 ## Usage with PostCSS Configuration File
 
@@ -195,6 +238,7 @@ module.exports = {
     'postcss-px-to-viewport-8-plugin-generic': {
       viewportWidth: 1920,
       exclude: [/node_modules/],
+      except: [/node_modules\/important-lib\//], // Process this library even though it's in node_modules
       unitToConvert: 'px',
       ...
     }
@@ -232,6 +276,7 @@ export default defineConfig({
           mediaQuery: true, // Whether units in media queries need to be converted
           replace: true, // Whether to directly replace property values instead of adding fallback properties
           exclude: [/node_modules\/ant-design-vue/], // Ignore files in certain folders or specific files, such as files under 'node_modules'
+          except: [/node_modules\/important-ui-lib/], // Process these files even if they match exclude patterns
           include: [], // If include is set, only matching files will be converted
           landscape: false, // Whether to add media query condition @media (orientation: landscape) based on landscapeWidth
           landscapeUnit: 'vw', // Unit used in landscape mode
